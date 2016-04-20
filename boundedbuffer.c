@@ -50,12 +50,14 @@ producer(void * d)
   printf("producer =%d\n",(int)d);
   while(1)
   {
+    short unlock = 0;
+    st_mutex_lock(mutex);
     while(count>=MAX_COUNT)
     {
       printf("=>wait produce=%d count=%d\n",(int)d,count);
+      st_mutex_unlock(mutex);
       st_cond_wait(condition);
     }
-    st_mutex_lock(mutex);
     count++;
     printf("=>produce=%d count=%d\n",(int)d,count);
     st_mutex_unlock(mutex);
@@ -71,12 +73,14 @@ consumer(void * d)
   printf("consumer =%d\n",(int)d);
   while(1)
   {
+    short unlock = 0;
+    st_mutex_lock(mutex);
     while(0 >= count)
     {
       printf("<=========wait consumer=%d count=%d\n",(int)d,count);
+      st_mutex_unlock(mutex);
       st_cond_wait(condition);
     }
-    st_mutex_lock(mutex);
     count--;
     printf("<=========consumer=%d count=%d\n",(int)d,count);
     st_mutex_unlock(mutex);
@@ -100,8 +104,8 @@ int main(int argc, char *argv[])
   condition = st_cond_new();
   mutex = st_mutex_new();
 
-  int maxQueueP = 15;
-  int maxQueueC = 10;
+  int maxQueueP = 10;
+  int maxQueueC = 15;
   st_thread_t p[6],c[6];
 
   int i = 0;
