@@ -53,15 +53,11 @@ producer(void * d)
     while(count>=MAX_COUNT)
     {
       printf("=>wait produce=%d count=%d\n",(int)d,count);
-      st_cond_wait(condition);
+      st_usleep(1000 * 100);
     }
-    st_mutex_lock(mutex);
     count++;
     printf("=>produce=%d count=%d\n",(int)d,count);
-    st_mutex_unlock(mutex);
-    st_cond_signal(condition);
-    st_usleep(1000 * 100);
-    
+    st_usleep(1000 * 100);    
   }
 }
 
@@ -74,15 +70,11 @@ consumer(void * d)
     while(0 >= count)
     {
       printf("<=========wait consumer=%d count=%d\n",(int)d,count);
-      st_cond_wait(condition);
+      st_usleep(1000 * 100);
     }
-    st_mutex_lock(mutex);
     count--;
     printf("<=========consumer=%d count=%d\n",(int)d,count);
-    st_mutex_unlock(mutex);
-    st_cond_signal(condition);
-    st_usleep(1000 * 100);
-    
+    st_usleep(1000 * 100);    
   }
 }
 
@@ -100,8 +92,8 @@ int main(int argc, char *argv[])
   condition = st_cond_new();
   mutex = st_mutex_new();
 
-  int maxQueueP = 10;
-  int maxQueueC = 15;
+  int maxQueueP = 15;
+  int maxQueueC = 10;
   st_thread_t p[6],c[6];
 
   int i = 0;
